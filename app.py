@@ -82,6 +82,13 @@ def main():
 
 #--------------------Top 50 players goals per 90------------------- 
 
+       #selected_stat = st.selectbox(
+        #"Select a stat",
+        #goals per 90
+        #assists per 90
+        # g/a per 90
+    #)
+
     g90_df = df[df["90s"] > 0].copy()
     g90_df["goals_per_90"] = (g90_df["Gls"] / g90_df["90s"]).round(2)
     
@@ -100,5 +107,26 @@ def main():
         hide_index=True
     )
 
+#--------------------Top 50 players assists per 90-------------------------
+
+    a90_df = df[df["90s"]> 0].copy()
+    a90_df["assists_per_90"] = (a90_df["Ast"]/a90_df["90s"]).round(2)
+
+    top_a90 = (
+        a90_df
+        .sort_values("assists_per_90", ascending=False)
+        .reset_index(drop=True)
+    )
+
+    top_a90["RK"] = top_a90.index + 1
+
+    st.subheader("Top 50 players with best assists per 90 ratio")
+    st.dataframe(
+        top_a90[["RK", "Player", "Min", "assists_per_90", "Ast", "Squad", "Comp", "Age"]].head(50),
+        use_container_width=True,
+        hide_index=True
+    )
+
+#----Do not touch----------
 if __name__ == "__main__":
     main()
