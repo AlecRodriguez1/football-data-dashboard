@@ -8,7 +8,7 @@ def main():
     
     st.title("Football Data Dashboard 2024-2025")
     
-
+    
 #----------------Columns------------------------------
     
     top_scorers_by_league_cols = ["Player", "MP", "Gls", "Squad", "Pos", "Age"]
@@ -79,6 +79,26 @@ def main():
     
     fig2 = px.bar(top10, x="Player", y="Gls", color = "Player", title="Top 10 scorers")
     st.plotly_chart(fig2)
+
+#--------------------Top 50 players goals per 90------------------- 
+
+    g90_df = df[df["90s"] > 0].copy()
+    g90_df["goals_per_90"] = (g90_df["Gls"] / g90_df["90s"]).round(2)
+    
+    top_g90 = (
+        g90_df
+        .sort_values("goals_per_90", ascending=False)
+        .reset_index(drop=True)
+    )
+    
+    top_g90["RK"] = top_g90.index + 1
+
+    st.subheader("Top 50 players with best goals per 90 ratio")
+    st.dataframe(
+        top_g90[["RK", "Player", "Min", "goals_per_90", "Gls", "Squad", "Comp", "Age"]].head(50),
+        use_container_width=True,
+        hide_index=True
+    )
 
 if __name__ == "__main__":
     main()
