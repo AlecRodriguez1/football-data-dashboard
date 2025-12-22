@@ -6,7 +6,7 @@ import plotly.express as px
 def main():
     df = pd.read_csv("data/player_stats_25.csv")
     
-    st.title("Football Data Dashboard 2024-2025")
+    st.title("Football Data Dashboard 24/25")
     
     
 #----------------Columns------------------------------
@@ -40,6 +40,7 @@ def main():
     
     fig1 = px.bar(top10_all, x="Player", y="Gls", color = "Player", title="Top 10 scorers")
     st.plotly_chart(fig1)
+    st.divider()
 
 #---------------League Selector---------------------
 
@@ -79,77 +80,51 @@ def main():
     
     fig2 = px.bar(top10, x="Player", y="Gls", color = "Player", title="Top 10 scorers")
     st.plotly_chart(fig2)
+    st.divider()
 
-#--------------------Top 50 players goals per 90------------------- 
+#--------------------Top 50 players stat per 90------------------- 
 
-    # selected_stat = st.selectbox(
-    #     "Select a statistic",
-    #     [
-    #         "Goals per 90",
-    #         "Assists per 90",
-    #         "Goals + Assists per 90"
-    #     ]
-    # )
+    selected_stat = st.selectbox(
+        "Select a statistic",
+        [
+            "Goals per 90",
+            "Assists per 90",
+            "Goals + Assists per 90"
+        ]
+    )
 
-    g90_df = df[df["90s"] > 0].copy()
-    g90_df["goals_per_90"] = (g90_df["Gls"] / g90_df["90s"]).round(2)
+    base_df = df[df["90s"] > 0].copy()
+
+    if selected_stat == "Goals per 90":
+        base_df["stat_value"] = (base_df["Gls"] / base_df["90s"]).round(2)
+        title = "Top 50 players by Goals per 90"
+        display_cols = ["RK", "Player", "Min", "stat_value", "Gls", "Squad", "Comp", "Age"]
     
-    top_g90 = (
-        g90_df
-        .sort_values("goals_per_90", ascending=False)
+    elif selected_stat == "Assists per 90":
+        base_df["stat_value"] = (base_df["Ast"] / base_df["90s"]).round(2)
+        title = "Top 50 players by Assists per 90"
+        display_cols = ["RK", "Player", "Min", "stat_value", "Ast", "Squad", "Comp", "Age"]
+    
+    else:
+        base_df["GA"] = base_df["Gls"] + base_df["Ast"]
+        base_df["stat_value"] = (base_df["GA"] / base_df["90s"]).round(2)
+        title = "Top 50 players by Goals + Assists per 90"
+        display_cols = ["RK", "Player", "Min", "stat_value", "Gls", "Ast", "Squad", "Comp", "Age"]
+
+    rank = (
+        base_df
+        .sort_values("stat_value", ascending=False)
         .reset_index(drop=True)
     )
     
-    top_g90["RK"] = top_g90.index + 1
+    rank["RK"] = rank.index + 1
 
-    st.subheader("Top 50 players with best goals per 90 ratio")
+    st.subheader(title)
     st.dataframe(
-        top_g90[["RK", "Player", "Min", "goals_per_90", "Gls", "Squad", "Comp", "Age"]].head(50),
+        rank[display_cols].head(50),
         use_container_width=True,
         hide_index=True
     )
-
-#--------------------Top 50 players assists per 90-------------------------
-
-    a90_df = df[df["90s"]> 0].copy()
-    a90_df["assists_per_90"] = (a90_df["Ast"]/a90_df["90s"]).round(2)
-
-    top_a90 = (
-        a90_df
-        .sort_values("assists_per_90", ascending=False)
-        .reset_index(drop=True)
-    )
-
-    top_a90["RK"] = top_a90.index + 1
-
-    st.subheader("Top 50 players with best assists per 90 ratio")
-    st.dataframe(
-        top_a90[["RK", "Player", "Min", "assists_per_90", "Ast", "Squad", "Comp", "Age"]].head(50),
-        use_container_width=True,
-        hide_index=True
-    )
-
-#--------------------Top 50 players g/a per 90-------------------------
-
-    ga_90_df = df[df["90s"]> 0].copy()
-    ga_90_df["GA"] = ga_90_df["Gls"] + ga_90_df["Ast"]
-    ga_90_df["g/a_per_90"] = (ga_90_df["GA"] / ga_90_df["90s"]).round(2)
-    
-    top_ga_90 = (
-        ga_90_df
-        .sort_values("g/a_per_90", ascending=False)
-        .reset_index(drop=True)
-    )
-
-    top_ga_90["RK"] = top_ga_90.index + 1
-
-    st.subheader("Top 50 players with best g/a per 90 ratio")
-    st.dataframe(
-        top_ga_90[["RK", "Player", "Min", "g/a_per_90", "Gls", "Ast", "Squad", "Comp", "Age"]].head(50),
-        use_container_width=True,
-        hide_index=True
-    )
-    
     
 #----Do not touch----------
 if __name__ == "__main__":
