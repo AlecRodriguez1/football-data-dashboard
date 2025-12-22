@@ -1,5 +1,6 @@
 import streamlit as st
 import pandas as pd
+import plotly.express as px
 
 
 def main():
@@ -31,6 +32,15 @@ def main():
         hide_index=True
     )
 
+#-----------------Graph---------------------------------
+
+    st.subheader("Top 10 scorers in top 5 leagues ")
+    
+    top10_all = five_league_scorers.head(10)
+    
+    fig1 = px.bar(top10_all, x="Player", y="Gls", color = "Player", title="Top 10 scorers")
+    st.plotly_chart(fig1)
+
 #---------------League Selector---------------------
 
     leagues = (df["Comp"].unique())
@@ -60,6 +70,15 @@ def main():
         use_container_width=True,
         hide_index=True
         )
+
+#-----------------Graph---------------------------------
+
+    st.subheader(f"Top 10 scorers in {selected_league} ")
+    
+    top10 = top_scorers.head(10)
+    
+    fig2 = px.bar(top10, x="Player", y="Gls", color = "Player", title="Top 10 scorers")
+    st.plotly_chart(fig2)
 
 if __name__ == "__main__":
     main()
