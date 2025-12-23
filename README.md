@@ -1,5 +1,7 @@
 #  Football Data Dashboard (2024/25)
 
+Live App: https://football-data-dashboard.streamlit.app/
+
 An interactive Streamlit dashboard that analyzes attacking performance across Europe’s top five football leagues during the 2024/25 season.  
 The project focuses on goal scoring, assists, and per-90 metrics to allow fair comparison between players with different playing time.
 
