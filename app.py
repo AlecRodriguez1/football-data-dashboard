@@ -2,6 +2,8 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 
+st.set_page_config(page_title="Football-data-dashboard", initial_sidebar_state="expanded")
+
 def show_rank_table(df, sort_col, display_cols, title, top_n=25):
     rank = (
         df.sort_values(sort_col, ascending=False)
@@ -20,8 +22,68 @@ def main():
     df = pd.read_csv("data/player_stats_25.csv")
     
     st.title("Football Data Dashboard 24/25")
-    
-    
+
+    with st.sidebar:
+        st.header("About this project")
+        st.write(
+            """
+            This dashboard analyzes attacking performances across
+            Europe's top 5 football leagues (2024/2025 season).
+            """
+        )
+
+        st.divider()
+
+        st.header('Metrics Explained')
+        st.markdown(
+            """
+            **Goals per 90**
+            Average goals scored per full 90 minutes played.
+
+            **Assists per 90**
+            Average assists per full 90 minutes played.
+
+            **Goals + Assists per 90(G/A per 90)**
+            Combined attacking contribution per 90 minutes.
+
+            These metrics help compare players with different playing time.
+            """
+        )
+        
+        st.divider()
+
+        st.header("About Author")
+        st.markdown(
+            '''
+            **Author:** Alec Rodriguez
+
+            **Built with:**
+            - Python
+            - Streamlit
+            - Pandas
+            - Plotly Express
+
+            **Focus:** Football data analysis & vizualization
+            '''
+        )
+
+        st.divider()
+
+        st.header("Data source")
+        st.markdown(
+            '''
+            **Platform:** Kaggle
+            **Dataset:** Football Players Stats (2024-2025)
+            **Author:** Hubert Sidorowicz
+            **License:** MIT
+
+            Data originally sourced from **FBref** and updated weekly.
+            '''
+        )
+        st.markdown(
+            "[View dataset on Kaggle](https://www.kaggle.com/datasets/hubertsidorowicz/football-players-stats-2024-2025)"
+        )
+
 #----------------Columns------------------------------
     
     top_scorers_by_league_cols = ["Player", "MP", "Gls", "Squad", "Pos", "Age"]
@@ -96,32 +158,32 @@ def main():
     if selected_stat == "Goals per 90":
         base_df["stat_value"] = (base_df["Gls"] / base_df["90s"]).round(2)
         title = "Top 50 players by Goals per 90"
+        stat_label = "Goals per 90"
         display_cols = ["RK", "Player", "Min", "stat_value", "Gls", "Squad", "Comp", "Age"]
     
     elif selected_stat == "Assists per 90":
         base_df["stat_value"] = (base_df["Ast"] / base_df["90s"]).round(2)
         title = "Top 50 players by Assists per 90"
+        stat_label = "Assists per 90"
         display_cols = ["RK", "Player", "Min", "stat_value", "Ast", "Squad", "Comp", "Age"]
     
     else:
         base_df["GA"] = base_df["Gls"] + base_df["Ast"]
         base_df["stat_value"] = (base_df["GA"] / base_df["90s"]).round(2)
         title = "Top 50 players by Goals + Assists per 90"
+        stat_label = "Goals + Assists per 90"
         display_cols = ["RK", "Player", "Min", "stat_value", "Gls", "Ast", "Squad", "Comp", "Age"]
 
-    rank = (
-        base_df
-        .sort_values("stat_value", ascending=False)
-        .reset_index(drop=True)
-    )
-    
-    rank["RK"] = rank.index + 1
+    base_df = base_df.rename(columns={"stat_value": stat_label})
 
-    st.subheader(title)
-    st.dataframe(
-        rank[display_cols].head(50),
-        use_container_width=True,
-        hide_index=True
+    display_cols= ["RK", "Player", "Min", stat_label, "Gls", "Ast", "Squad", "Comp", "Age"]
+
+    show_rank_table(
+        df=base_df,
+        sort_col=stat_label,
+        display_cols=display_cols,
+        title=title,
+        top_n=50
     )
     
 #----Do not touch----------
