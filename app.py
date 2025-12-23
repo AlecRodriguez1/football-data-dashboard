@@ -36,6 +36,8 @@ def main():
     )
     st.markdown("#")
 
+#--------------------Sidebar info-------------------------
+
     with st.sidebar:
         st.header("About this project")
         st.write(
@@ -116,7 +118,7 @@ def main():
         "Ranked by total goals scored across Europe's top five leagues during the 2024/25 season."
     )
 
-#-----------------Graph---------------------------------
+#-----------------Graph#1---------------------------------
 
     st.subheader("Top 10 scorers in top 5 leagues ")
     
@@ -154,7 +156,7 @@ def main():
         f"Top goal scorers within {selected_league}, ranked by total goals scored."
     )
 
-#-----------------Graph---------------------------------
+#-----------------Graph#2---------------------------------
 
     st.subheader(f"Top 10 scorers in {selected_league} ")
     
@@ -222,7 +224,7 @@ def main():
         f"Players are ranked by {stat_label}. A minimum of {min_minutes} minutes played is required to reduce small-sample bias."
     )
 
-#----------------------Graph----------------------
+#----------------------Graph#3----------------------
     
     fig3 = px.scatter(
         base_df,
@@ -241,6 +243,8 @@ def main():
         "while sustained high values at higher minutes indicate consistent attacking output."
     )
 
-#----Do not touch----------
+
+
+
 if __name__ == "__main__":
     main()
